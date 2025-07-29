@@ -7,8 +7,8 @@ from github import Github
 app = Flask(__name__)
 
 # Replace with your own GitHub token and repo
-GITHUB_TOKEN = 'your_github_personal_access_token'
-REPO_NAME = 'username/repo'  # Example: 'maxlucia/code-uploader'
+GITHUB_TOKEN = 'ghp_BmQM6S7H6s200qhXRb7z4PxggbuVLN1gx9'
+REPO_NAME = 'MANOJKANNAN04/github-uploaded'  
 
 @app.route('/')
 def index():
