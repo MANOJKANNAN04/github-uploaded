@@ -6,12 +6,14 @@ from github import Github
 
 app = Flask(__name__)
 
-# Replace with your own GitHub token and repo
+# ✅ Replace with your actual GitHub token and repo name
 GITHUB_TOKEN = 'ghp_BmQM6S7H6s200qhXRb7z4PxggbuVLN1gx9'
-REPO_NAME = 'MANOJKANNAN04/github-uploaded'  
+REPO_NAME = 'MANOJKANNAN04/github-uploaded'
 
 @app.route('/')
 def index():
+    # Debug: Show current working directory
+    print("Current working directory:", os.getcwd())
     return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
@@ -28,12 +30,15 @@ def upload_zip():
         zip_path = os.path.join(temp_dir, file.filename)
         file.save(zip_path)
 
+        # Extract the zip file
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(temp_dir)
 
+        # Authenticate with GitHub
         github = Github(GITHUB_TOKEN)
         repo = github.get_repo(REPO_NAME)
 
+        # Upload files to GitHub
         for root, dirs, files in os.walk(temp_dir):
             for filename in files:
                 if filename.endswith('.zip'):
@@ -44,15 +49,16 @@ def upload_zip():
                     content = f.read()
 
                 relative_path = os.path.relpath(local_path, temp_dir)
+
                 try:
                     repo.create_file(relative_path, f"Add {relative_path}", content)
                 except Exception as e:
-                    print(f"Error: {e}")
+                    print(f"Error uploading {relative_path}: {e}")
                     continue
 
-        return 'Files uploaded and pushed to GitHub successfully!'
+        return '✅ Files uploaded and pushed to GitHub successfully!'
 
-    return 'Invalid file format. Upload a .zip file.', 400
+    return '❌ Invalid file format. Please upload a .zip file.', 400
 
 if __name__ == '__main__':
     app.run(debug=True)
